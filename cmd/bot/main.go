@@ -34,7 +34,7 @@ func main() {
 
 	// Schedule daily summary at 03:00 BRT
 	c := cron.New(cron.WithLocation(loc))
-	_, err = c.AddFunc("06 02 * * *", func() {
+	_, err = c.AddFunc("00 03 * * *", func() {
 		log.Println("🕖 Running daily summary at 03:00 BRT")
 		telegram.RunDailySummary()
 	})
