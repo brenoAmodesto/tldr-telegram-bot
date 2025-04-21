@@ -182,3 +182,42 @@ func SummarizeGemini(text string, lang string) (string, error) {
 
 	return string(summary), nil
 }
+
+func SummarizeGeminiLimited(text string, lang string) (string, error) {
+	ctx := context.Background()
+	apiKey := os.Getenv("GEMINI_API_KEY")
+
+	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		return "", fmt.Errorf("failed to create Gemini client: %v", err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel(os.Getenv("GEMINI_MODEL"))
+	model.SetTemperature(0.2)
+	model.SetTopK(40)
+	model.SetTopP(0.95)
+	model.SetMaxOutputTokens(1024)
+
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	// chama func prompt
+	prompt := constructPromptLimited(text, lang)
+
+	resp, err := model.GenerateContent(ctxWithTimeout, genai.Text(prompt))
+	if err != nil {
+		return "", fmt.Errorf("failed to generate content: %v", err)
+	}
+
+	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
+		return "", fmt.Errorf("no response generated")
+	}
+
+	summary, ok := resp.Candidates[0].Content.Parts[0].(genai.Text)
+	if !ok {
+		return "", fmt.Errorf("unexpected response format")
+	}
+
+	return string(summary), nil
+}

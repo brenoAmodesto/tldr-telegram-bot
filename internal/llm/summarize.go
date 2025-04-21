@@ -61,3 +61,17 @@ func constructPrompt(text string, lang string) string {
 		return text // fallback para texto puro
 	}
 }
+
+// func a ser chamada pela func SummarizeGeminiLimited
+func constructPromptLimited(text string, lang string) string {
+	switch lang {
+	case "pt":
+		return fmt.Sprintf("Resuma objetivamente a conversa do Telegram abaixo com até 400 caracteres:\n\n%s", text)
+	case "en":
+		return fmt.Sprintf("Summarize the following Telegram conversation in no more than 400 characters:\n\n%s", text)
+	case "es":
+		return fmt.Sprintf("Resume el siguiente chat de Telegram en no más de 400 caracteres:\n\n%s", text)
+	default:
+		return text
+	}
+}

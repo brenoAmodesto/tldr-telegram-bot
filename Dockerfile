@@ -11,7 +11,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o tldr-telegram-bot ./cmd/bot/main.go
 
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y ca-certificates
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    tzdata    
 
 WORKDIR /root/
 
